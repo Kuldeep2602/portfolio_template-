@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-surface: rgba(255, 255, 255, 0.6);
+    --glass-highlight: rgba(255, 255, 255, 0.8);
+  }
+
+  html {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[#fdfbf7] text-gray-900 overflow-x-hidden transition-colors duration-300;
+    /* Soft cream base */
+    background-attachment: fixed;
+    min-height: 100vh;
+    zoom: 0.9;
+    /* Reduce size by 10% to fit on screen without scrolling */
+  }
+
+  .dark body {
+    @apply bg-[#0a0a0a] text-gray-100;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold leading-tight tracking-tight;
+  }
+
+  a {
+    @apply transition-all duration-300;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-white/40 backdrop-blur-xl border border-[length:var(--glass-border)] shadow-xl transition-all duration-300;
+  }
+
+  .dark .glass-panel {
+    @apply bg-black/40 border-white/10 shadow-none;
+  }
+
+  .glass-button {
+    @apply px-6 py-3 rounded-full bg-white/50 hover:bg-white/70 backdrop-blur-lg border border-[length:var(--glass-border)] transition-all duration-300 active:scale-95 text-gray-800;
+  }
+
+  .dark .glass-button {
+    @apply bg-white/5 hover:bg-white/10 border-white/10 text-gray-200;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .text-glow {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+
+  .bg-glass-gradient {
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  /* Glass Bubble Hover Effect */
+  .glass-bubble-text {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-bubble-text::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 20px;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    z-index: -1;
+  }
+
+  .glass-bubble-text:hover::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .dark .glass-bubble-text::before {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .glass-bubble-text:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Animated Glass Bubble with Shimmer */
+  .glass-bubble-shimmer {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .glass-bubble-shimmer::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.5) 100%);
+    background-size: 200% 200%;
+    border-radius: 24px;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    z-index: -1;
+  }
+
+  .glass-bubble-shimmer:hover::before {
+    opacity: 1;
+    transform: scale(1);
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  .dark .glass-bubble-shimmer::before {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.2) 100%);
+    background-size: 200% 200%;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .glass-bubble-shimmer:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* Keyframes for shimmer animation */
+@keyframes shimmer {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Custom scrollbar - Minimalist */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-glass-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-glass-500;
+}
