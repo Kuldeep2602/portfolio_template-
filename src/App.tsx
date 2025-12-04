@@ -6,29 +6,36 @@ import About from './pages/About';
 import Work from './pages/Work';
 import Contact from './pages/Contact';
 import { ThemeProvider } from './context/ThemeContext';
+import { PortfolioProvider } from './context/PortfolioContext';
 import ThemeToggle from './components/ThemeToggle';
+import EditorToolbar from './components/EditorToolbar';
 
 function App() {
   return (
-    <ThemeProvider>
-      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-300 relative">
-        {/* Theme Toggle */}
-        <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50">
-          <ThemeToggle />
-        </div>
+    <PortfolioProvider>
+      <ThemeProvider>
+        <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-300 relative">
+          {/* Editor Toolbar - always show */}
+          <EditorToolbar />
+          
+          {/* Theme Toggle */}
+          <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50">
+            <ThemeToggle />
+          </div>
 
-        <main className="flex-grow px-4 md:px-8 max-w-7xl mx-auto w-full relative z-10">
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/projects" element={<Work />} />
-              <Route path="/contact" element={<Contact />} />
-            </Routes>
-          </AnimatePresence>
-        </main>
-      </div>
-    </ThemeProvider>
+          <main className="flex-grow px-4 md:px-8 max-w-7xl mx-auto w-full relative z-10 pt-16">
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/projects" element={<Work />} />
+                <Route path="/contact" element={<Contact />} />
+              </Routes>
+            </AnimatePresence>
+          </main>
+        </div>
+      </ThemeProvider>
+    </PortfolioProvider>
   );
 }
 

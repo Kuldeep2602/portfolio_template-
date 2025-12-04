@@ -5,12 +5,14 @@ interface TiltCardProps {
     children: React.ReactNode;
     className?: string;
     glareColor?: string;
+    disableTilt?: boolean;
 }
 
 const TiltCard: React.FC<TiltCardProps> = ({
     children,
     className = "",
-    glareColor = "rgba(255, 255, 255, 0.3)"
+    glareColor = "rgba(255, 255, 255, 0.3)",
+    disableTilt = false
 }) => {
     const ref = useRef<HTMLDivElement>(null);
     const x = useMotionValue(0);
@@ -24,7 +26,7 @@ const TiltCard: React.FC<TiltCardProps> = ({
     const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-20deg", "20deg"]);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!ref.current) return;
+        if (!ref.current || disableTilt) return;
 
         const rect = ref.current.getBoundingClientRect();
 
