@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Check if we're in viewer mode (deployed portfolio without editor)
+const isViewerMode = import.meta.env.VITE_VIEWER_MODE === 'true';
+
 interface EditableWrapperProps {
   children: React.ReactNode;
   onEdit?: () => void;
@@ -18,6 +21,11 @@ export const EditableWrapper: React.FC<EditableWrapperProps> = ({
   className = ''
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  // In viewer mode, just render children without any edit controls
+  if (isViewerMode) {
+    return <>{children}</>;
+  }
 
   return (
     <div
@@ -61,6 +69,9 @@ export const AddButton: React.FC<AddButtonProps> = ({
   label = 'Add New',
   className = ''
 }) => {
+  // Hide add button in viewer mode
+  if (isViewerMode) return null;
+
   return (
     <button
       onClick={onClick}
@@ -114,12 +125,12 @@ export const EditModal: React.FC<EditModalProps> = ({
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
-            
+
             {/* Content - Scrollable */}
             <div className="flex-1 overflow-y-auto p-4">
               {children}
             </div>
-            
+
             {/* Footer */}
             {onSave && (
               <div className="flex justify-end gap-2 p-4 border-t border-gray-200 dark:border-gray-800 flex-shrink-0">

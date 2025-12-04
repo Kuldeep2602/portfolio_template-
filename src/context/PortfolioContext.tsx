@@ -27,8 +27,30 @@ interface PortfolioContextType {
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
 
 // Load config from localStorage if available
-// Load config from localStorage if available
+import portfolioConfig from '../portfolio.config.json';
+
+// Load config from localStorage if available, or use the JSON file if present (for deployed sites)
 const loadFromStorage = (): PortfolioConfig => {
+  // Check if the JSON file has valid data (it will be empty {} in the template)
+  if (portfolioConfig && Object.keys(portfolioConfig).length > 0) {
+    // If we have a config file, use it! This means we are likely in a deployed environment
+    // where the user has injected their config.
+    // We still merge with default to be safe.
+    const parsed = portfolioConfig as Partial<PortfolioConfig>;
+    return {
+      ...defaultPortfolioConfig,
+      ...parsed,
+      meta: { ...defaultPortfolioConfig.meta, ...(parsed.meta || {}) },
+      theme: { ...defaultPortfolioConfig.theme, ...(parsed.theme || {}) },
+      hero: { ...defaultPortfolioConfig.hero, ...(parsed.hero || {}) },
+      about: { ...defaultPortfolioConfig.about, ...(parsed.about || {}) },
+      contact: { ...defaultPortfolioConfig.contact, ...(parsed.contact || {}) },
+      footer: { ...defaultPortfolioConfig.footer, ...(parsed.footer || {}) },
+      projects: parsed.projects || defaultPortfolioConfig.projects,
+      socialLinks: parsed.socialLinks || defaultPortfolioConfig.socialLinks,
+    };
+  }
+
   if (typeof window !== 'undefined') {
     const stored = localStorage.getItem('portfolio-config');
     if (stored) {
