@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Check if we're in viewer mode (deployed portfolio without editor)
+const isViewerMode = import.meta.env.VITE_VIEWER_MODE === 'true';
+
 interface EditableWrapperProps {
   children: React.ReactNode;
   onEdit?: () => void;
