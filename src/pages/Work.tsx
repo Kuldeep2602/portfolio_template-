@@ -164,8 +164,32 @@ const Work: React.FC = () => {
                         <span className="line-clamp-3">{project.description}</span>
                       )}
                     </p>
-                    <div className="flex items-center space-x-3">
-                      {project.codeUrl && (
+                    <div className="flex flex-wrap items-center gap-3">
+                      {/* Code URL */}
+                      {isEditorMode ? (
+                        <div className="flex items-center gap-2">
+                          <InlineEdit
+                            value={project.codeUrl || ''}
+                            onSave={(value) => handleUpdateProject(project.id, { codeUrl: value })}
+                            placeholder="Add Code URL..."
+                            className="text-sm"
+                          >
+                            <span className="glass-bubble-button inline-flex items-center bg-white/40 dark:bg-white/5 hover:bg-white/60 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 font-medium shadow-md rounded-lg px-4 py-2 gap-2 text-sm transition-all duration-300 backdrop-blur-md border border-white/40 dark:border-white/20">
+                              <FiArrowRight className="w-4 h-4" />
+                              {project.codeUrl ? 'Code' : 'Add Code URL'}
+                            </span>
+                          </InlineEdit>
+                          {project.codeUrl && (
+                            <button
+                              onClick={() => handleUpdateProject(project.id, { codeUrl: '' })}
+                              className="p-1 bg-red-500 hover:bg-red-600 text-white rounded transition-colors"
+                              title="Remove Code URL"
+                            >
+                              <FiTrash2 className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      ) : project.codeUrl ? (
                         <a
                           href={project.codeUrl}
                           target="_blank"
@@ -174,8 +198,40 @@ const Work: React.FC = () => {
                         >
                           <FiArrowRight className="w-4 h-4" /> Code
                         </a>
-                      )}
-                      {project.demoUrl && (
+                      ) : null}
+
+                      {/* Demo URL */}
+                      {isEditorMode ? (
+                        <div className="flex items-center gap-2">
+                          <InlineEdit
+                            value={project.demoUrl || ''}
+                            onSave={(value) => handleUpdateProject(project.id, { demoUrl: value })}
+                            placeholder="Add Demo URL..."
+                            className="text-sm"
+                          >
+                            <span
+                              className="inline-flex items-center font-medium shadow-md rounded-lg px-4 py-2 gap-2 text-sm transition-all duration-300 backdrop-blur-md border"
+                              style={{
+                                backgroundColor: `${theme.primaryColor}20`,
+                                color: theme.primaryColor,
+                                borderColor: `${theme.primaryColor}30`
+                              }}
+                            >
+                              <FiExternalLink className="w-4 h-4" />
+                              {project.demoUrl ? 'Demo' : 'Add Demo URL'}
+                            </span>
+                          </InlineEdit>
+                          {project.demoUrl && (
+                            <button
+                              onClick={() => handleUpdateProject(project.id, { demoUrl: '' })}
+                              className="p-1 bg-red-500 hover:bg-red-600 text-white rounded transition-colors"
+                              title="Remove Demo URL"
+                            >
+                              <FiTrash2 className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      ) : project.demoUrl ? (
                         <a
                           href={project.demoUrl}
                           target="_blank"
@@ -189,7 +245,7 @@ const Work: React.FC = () => {
                         >
                           <FiExternalLink className="w-4 h-4" /> Demo
                         </a>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -204,7 +260,7 @@ const Work: React.FC = () => {
               )}
             </motion.article>
           ))}
-          
+
           {/* Add Project Button */}
           {isEditorMode && (
             <motion.div

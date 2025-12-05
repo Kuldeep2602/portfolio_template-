@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Rocket, Palette, RotateCcw, Eye, EyeOff, ChevronDown, Upload, Github, Star, Undo2 } from 'lucide-react';
+import { Download, Rocket, Palette, RotateCcw, Eye, EyeOff, ChevronDown, Upload, Github, Star, Undo2, FileText, Loader2 } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import ExportModal from './editor/ExportModal';
 import DeployModal from './editor/DeployModal';
@@ -10,7 +10,9 @@ const EditorToolbar: React.FC = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [showDeployModal, setShowDeployModal] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [isParsingResume, setIsParsingResume] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const resumeInputRef = useRef<HTMLInputElement>(null);
 
   const handleImportConfig = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -26,6 +28,40 @@ const EditorToolbar: React.FC = () => {
         }
       };
       reader.readAsText(file);
+    }
+  };
+
+  const handleImportResume = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsParsingResume(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('resume', file);
+
+      const response = await fetch('http://localhost:3001/api/parse-resume', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.config) {
+        updateConfig(data.config);
+        alert('Resume parsed successfully! Your portfolio has been populated with your information.');
+      } else {
+        alert('Failed to parse resume: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Resume parsing error:', error);
+      alert('Failed to parse resume. Make sure the server is running and has a valid Gemini API key.');
+    } finally {
+      setIsParsingResume(false);
+      if (resumeInputRef.current) {
+        resumeInputRef.current.value = '';
+      }
     }
   };
 
@@ -49,11 +85,10 @@ const EditorToolbar: React.FC = () => {
           {/* Edit Mode Toggle */}
           <button
             onClick={() => setIsEditorMode(!isEditorMode)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              isEditorMode 
-                ? 'bg-blue-500 text-white' 
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
-            }`}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${isEditorMode
+              ? 'bg-blue-500 text-white'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
+              }`}
           >
             {isEditorMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
             {isEditorMode ? 'Editing' : 'Preview'}
@@ -67,14 +102,14 @@ const EditorToolbar: React.FC = () => {
               onClick={() => setShowColorPicker(!showColorPicker)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
-              <div 
+              <div
                 className="w-4 h-4 rounded-full"
                 style={{ background: `linear-gradient(135deg, ${config.theme.primaryColor}, ${config.theme.secondaryColor})` }}
               />
               <Palette className="w-4 h-4" />
               <ChevronDown className="w-3 h-3" />
             </button>
-            
+
             {showColorPicker && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -92,7 +127,7 @@ const EditorToolbar: React.FC = () => {
                       }}
                       className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                      <div 
+                      <div
                         className="w-8 h-8 rounded-lg shadow-sm"
                         style={{ background: `linear-gradient(135deg, ${preset.primary}, ${preset.secondary})` }}
                       />
@@ -110,11 +145,10 @@ const EditorToolbar: React.FC = () => {
           <button
             onClick={undo}
             disabled={!canUndo}
-            className={`p-2.5 rounded-full transition-all ${
-              canUndo 
-                ? 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110' 
-                : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
-            }`}
+            className={`p-2.5 rounded-full transition-all ${canUndo
+              ? 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110'
+              : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              }`}
             title="Undo"
           >
             <Undo2 className="w-4 h-4" />
@@ -135,7 +169,37 @@ const EditorToolbar: React.FC = () => {
 
           <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
 
-          {/* Import Config */}
+          {/* Import Resume */}
+          <input
+            type="file"
+            ref={resumeInputRef}
+            onChange={handleImportResume}
+            accept=".pdf,.docx,.txt"
+            className="hidden"
+          />
+          <button
+            onClick={() => resumeInputRef.current?.click()}
+            disabled={isParsingResume}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isParsingResume
+                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-wait'
+                : 'bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 hover:scale-105'
+              }`}
+            title="Import your resume to auto-fill portfolio"
+          >
+            {isParsingResume ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Parsing...
+              </>
+            ) : (
+              <>
+                <FileText className="w-4 h-4" />
+                Import Resume
+              </>
+            )}
+          </button>
+
+          {/* Hidden: Import Config (kept for backwards compatibility) */}
           <input
             type="file"
             ref={fileInputRef}
@@ -143,13 +207,6 @@ const EditorToolbar: React.FC = () => {
             accept=".json"
             className="hidden"
           />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110 transition-all"
-            title="Import config"
-          >
-            <Upload className="w-4 h-4" />
-          </button>
 
           {/* GitHub Star Link - Highlighted */}
           <a
@@ -187,8 +244,8 @@ const EditorToolbar: React.FC = () => {
 
       {/* Click outside to close color picker */}
       {showColorPicker && (
-        <div 
-          className="fixed inset-0 z-40" 
+        <div
+          className="fixed inset-0 z-40"
           onClick={() => {
             setShowColorPicker(false);
           }}

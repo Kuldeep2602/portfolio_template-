@@ -1,15 +1,34 @@
 import { motion } from 'framer-motion';
-import { FiMail, FiLinkedin, FiGithub, FiPhone, FiCalendar, FiTrash2, FiTwitter, FiInstagram, FiYoutube, FiExternalLink, FiFileText } from 'react-icons/fi';
+import { FiMail, FiLinkedin, FiGithub, FiPhone, FiCalendar, FiTrash2, FiTwitter, FiInstagram, FiYoutube, FiExternalLink, FiFileText, FiPlus } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { usePortfolio } from '../context/PortfolioContext';
 import InlineEdit from '../components/InlineEdit';
+import { EditModal } from '../components/EditableWrapper';
+import type { SocialLink } from '../types/portfolio';
 
 const Contact = () => {
   const { config, updateContact, updateAbout, updateSocialLinks, isEditorMode } = usePortfolio();
   const { contact, theme, socialLinks, about } = config;
+  const [showAddSocialModal, setShowAddSocialModal] = useState(false);
+  const [newSocialLink, setNewSocialLink] = useState<Partial<SocialLink>>({ platform: 'github', label: '', url: '' });
 
   const handleDeleteSocialLink = (id: string) => {
     updateSocialLinks(socialLinks.filter(link => link.id !== id));
+  };
+
+  const handleAddSocialLink = () => {
+    if (newSocialLink.label && newSocialLink.url) {
+      const link: SocialLink = {
+        id: Date.now().toString(),
+        platform: newSocialLink.platform || 'website',
+        label: newSocialLink.label,
+        url: newSocialLink.url
+      };
+      updateSocialLinks([...socialLinks, link]);
+      setNewSocialLink({ platform: 'github', label: '', url: '' });
+      setShowAddSocialModal(false);
+    }
   };
 
   // Get icon for platform
@@ -69,9 +88,9 @@ const Contact = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Email - No delete */}
               <div className="flex items-center text-base font-medium text-gray-600 dark:text-gray-300 group">
-                <div 
+                <div
                   className="p-3 rounded-xl mr-4 border shadow-sm flex-shrink-0 bg-white/50 dark:bg-white/5 backdrop-blur-sm"
-                  style={{ 
+                  style={{
                     borderColor: `${theme.primaryColor}30`
                   }}
                 >
@@ -93,9 +112,9 @@ const Contact = () => {
 
               {/* Phone - With delete */}
               <div className="flex items-center text-base font-medium text-gray-600 dark:text-gray-300 group">
-                <div 
+                <div
                   className="p-3 rounded-xl mr-4 border shadow-sm flex-shrink-0 bg-white/50 dark:bg-white/5 backdrop-blur-sm"
-                  style={{ 
+                  style={{
                     borderColor: `${theme.primaryColor}30`
                   }}
                 >
@@ -130,9 +149,9 @@ const Contact = () => {
 
               {/* Calendly - With delete */}
               <div className="flex items-center text-base font-medium text-gray-600 dark:text-gray-300 group">
-                <div 
+                <div
                   className="p-3 rounded-xl mr-4 border shadow-sm flex-shrink-0 bg-white/50 dark:bg-white/5 backdrop-blur-sm"
-                  style={{ 
+                  style={{
                     borderColor: `${theme.secondaryColor}30`
                   }}
                 >
@@ -181,9 +200,9 @@ const Contact = () => {
                           rel="noopener noreferrer"
                           className="flex items-center text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                         >
-                          <div 
+                          <div
                             className="p-2.5 rounded-xl mr-3 border shadow-sm flex-shrink-0 bg-white/50 dark:bg-white/5 backdrop-blur-sm"
-                            style={{ 
+                            style={{
                               borderColor: `${theme.primaryColor}30`
                             }}
                           >
@@ -204,6 +223,28 @@ const Contact = () => {
                     );
                   })}
                 </div>
+                {/* Add Social Link Button */}
+                {isEditorMode && (
+                  <button
+                    onClick={() => setShowAddSocialModal(true)}
+                    className="mt-4 flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-colors"
+                  >
+                    <FiPlus size={16} /> Add Social Link
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Show add button even if no social links exist */}
+            {socialLinks.length === 0 && isEditorMode && (
+              <div className="mt-6 pt-5 border-t border-gray-200/30 dark:border-white/10">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-300">Social Links</h4>
+                <button
+                  onClick={() => setShowAddSocialModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-colors"
+                >
+                  <FiPlus size={16} /> Add Social Link
+                </button>
               </div>
             )}
 
@@ -217,12 +258,59 @@ const Contact = () => {
                     className="text-gray-500 dark:text-gray-400 text-sm"
                     placeholder="Your location"
                   />
-                ) : about.location} • Available for Remote Work
+                ) : about.location}
               </p>
             </div>
           </div>
         </div>
       </motion.div>
+
+      {/* Add Social Link Modal */}
+      <EditModal
+        isOpen={showAddSocialModal}
+        onClose={() => setShowAddSocialModal(false)}
+        title="Add Social Link"
+        onSave={handleAddSocialLink}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Platform</label>
+            <select
+              value={newSocialLink.platform}
+              onChange={(e) => setNewSocialLink({ ...newSocialLink, platform: e.target.value as SocialLink['platform'] })}
+              className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white"
+            >
+              <option value="github">GitHub</option>
+              <option value="linkedin">LinkedIn</option>
+              <option value="twitter">Twitter</option>
+              <option value="youtube">YouTube</option>
+              <option value="instagram">Instagram</option>
+              <option value="resume">Resume</option>
+              <option value="website">Website</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Label</label>
+            <input
+              type="text"
+              value={newSocialLink.label}
+              onChange={(e) => setNewSocialLink({ ...newSocialLink, label: e.target.value })}
+              placeholder="e.g., My GitHub"
+              className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL</label>
+            <input
+              type="url"
+              value={newSocialLink.url}
+              onChange={(e) => setNewSocialLink({ ...newSocialLink, url: e.target.value })}
+              placeholder="https://..."
+              className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white"
+            />
+          </div>
+        </div>
+      </EditModal>
     </div>
   );
 };
