@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Pencil, Check, X } from 'lucide-react';
 
+// Check if we're in viewer mode (deployed portfolio without editor)
+const isViewerMode = import.meta.env.VITE_VIEWER_MODE === 'true';
+
 interface InlineEditProps {
   value: string;
   onSave: (value: string) => void;
@@ -20,6 +23,11 @@ const InlineEdit: React.FC<InlineEditProps> = ({
   placeholder = 'Click to edit...',
   children
 }) => {
+  // In viewer mode, just render the content without any editing capability
+  if (isViewerMode) {
+    return <span className={className}>{children || value}</span>;
+  }
+
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
   const [isHovered, setIsHovered] = useState(false);
