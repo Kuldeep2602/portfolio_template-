@@ -89,7 +89,7 @@ const LandingPage = () => {
 
   return (
     <motion.div
-      className="flex flex-col items-center justify-start min-h-[75vh] pt-2 md:pt-4 pb-8"
+      className="flex flex-col items-center justify-center min-h-[85vh] py-8"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
