@@ -50,7 +50,9 @@ const DeployModal: React.FC<DeployModalProps> = ({ isOpen, onClose }) => {
   };
 
   const openVercel = () => {
-    window.open('https://vercel.com/new/clone?repository-url=https://github.com/Kuldeep2602/portfolio_template-', '_blank');
+    // When users deploy, set viewer mode to true so their portfolio is non-editable
+    const vercelUrl = 'https://vercel.com/new/clone?repository-url=https://github.com/Kuldeep2602/portfolio_template-&env=VITE_VIEWER_MODE&envDescription=Set%20to%20true%20for%20production%20portfolio&envLink=https://github.com/Kuldeep2602/portfolio_template-';
+    window.open(vercelUrl, '_blank');
   };
 
   const renderContent = () => {
@@ -144,6 +146,7 @@ const DeployModal: React.FC<DeployModalProps> = ({ isOpen, onClose }) => {
               <ol className="text-sm text-gray-600 dark:text-gray-400 space-y-2 list-decimal list-inside">
                 <li>Fork the portfolio template on GitHub</li>
                 <li>Import your config file into the app</li>
+                <li>Set VITE_VIEWER_MODE=true in deployment</li>
                 <li>Deploy to Vercel or Netlify</li>
               </ol>
             </div>
