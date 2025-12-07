@@ -49,10 +49,64 @@ const DeployModal: React.FC<DeployModalProps> = ({ isOpen, onClose }) => {
     onClose();
   };
 
+  const handleGitHubDeploy = async () => {
+    setStep('generating');
+    
+    try {
+      // Get config from context
+      const config = JSON.parse(exportConfig());
+      
+      // Open GitHub OAuth in popup
+      const width = 600;
+      const height = 700;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+      
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const authWindow = window.open(
+        `${apiUrl}/auth/github`,
+        'GitHub Auth',
+        `width=${width},height=${height},left=${left},top=${top}`
+      );
+      
+      // Listen for the OAuth callback
+      window.addEventListener('message', async (event) => {
+        if (event.data.type === 'GITHUB_AUTH_SUCCESS') {
+          const { token } = event.data;
+          authWindow?.close();
+          
+          // Deploy to GitHub
+          const response = await fetch(`${apiUrl}/api/deploy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              token,
+              config,
+              repoName: `portfolio-${Date.now()}`
+            })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            // Open Vercel with the new repo
+            window.open(`https://vercel.com/new/clone?repository-url=${result.repoUrl}`, '_blank');
+            setStep('ready');
+          } else {
+            alert('Deployment failed: ' + (result.error || 'Unknown error'));
+            setStep('intro');
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Deploy error:', error);
+      alert('Deployment failed. Please try again.');
+      setStep('intro');
+    }
+  };
+  
   const openVercel = () => {
-    // When users deploy, set viewer mode to true so their portfolio is non-editable
-    const vercelUrl = 'https://vercel.com/new/clone?repository-url=https://github.com/Kuldeep2602/portfolio_template-&env=VITE_VIEWER_MODE&envDescription=Set%20to%20true%20for%20production%20portfolio&envLink=https://github.com/Kuldeep2602/portfolio_template-';
-    window.open(vercelUrl, '_blank');
+    handleGitHubDeploy();
   };
 
   const renderContent = () => {
