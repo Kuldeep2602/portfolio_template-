@@ -13,6 +13,8 @@ const LandingPage = () => {
   const { config, updateHero, updateSocialLinks, isEditorMode } = usePortfolio();
   const { hero, socialLinks, theme } = config;
   const [showAddSocialModal, setShowAddSocialModal] = useState(false);
+  const [showEditSocialModal, setShowEditSocialModal] = useState(false);
+  const [editingSocialLink, setEditingSocialLink] = useState<SocialLink | null>(null);
   const [newSocialLink, setNewSocialLink] = useState<Partial<SocialLink>>({ platform: 'github', label: '', url: '' });
 
   // Get icon for social links
@@ -32,13 +34,24 @@ const LandingPage = () => {
     if (newSocialLink.label && newSocialLink.url) {
       const link: SocialLink = {
         id: Date.now().toString(),
-        platform: newSocialLink.platform || 'website',
+        platform: newSocialLink.platform || 'github',
         label: newSocialLink.label,
         url: newSocialLink.url
       };
       updateSocialLinks([...socialLinks, link]);
       setNewSocialLink({ platform: 'github', label: '', url: '' });
       setShowAddSocialModal(false);
+    }
+  };
+
+  const handleEditSocialLink = () => {
+    if (editingSocialLink) {
+      handleUpdateSocialLink(editingSocialLink.id, {
+        label: editingSocialLink.label,
+        url: editingSocialLink.url
+      });
+      setShowEditSocialModal(false);
+      setEditingSocialLink(null);
     }
   };
 
@@ -76,14 +89,14 @@ const LandingPage = () => {
 
   return (
     <motion.div
-      className="flex flex-col items-center justify-start min-h-[80vh] pt-4 md:pt-8"
+      className="flex flex-col items-center justify-start min-h-[75vh] pt-2 md:pt-4 pb-8"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       {/* Header */}
-      <motion.div className="text-center mb-4" variants={itemVariants}>
-        <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-3 tracking-tighter text-glow transition-colors duration-300">
+      <motion.div className="text-center mb-3" variants={itemVariants}>
+        <h1 className="text-4xl md:text-5xl font-light text-gray-900 dark:text-white mb-2 tracking-tighter text-glow transition-colors duration-300">
           {isEditorMode ? (
             <InlineEdit
               value={hero.name}
@@ -118,7 +131,7 @@ const LandingPage = () => {
           className="lg:col-span-2"
           variants={itemVariants}
         >
-          <TiltCard disableTilt={isEditorMode} className="h-full glass-bubble-card-glow bg-blue-50/80 dark:bg-blue-900/20 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-xl dark:shadow-none rounded-3xl min-h-[300px] relative overflow-hidden group">
+          <TiltCard disableTilt={isEditorMode} className="h-full glass-bubble-card-glow bg-blue-50/80 dark:bg-blue-900/20 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-xl dark:shadow-none rounded-3xl min-h-[260px] relative overflow-hidden group">
             <div className="flex flex-col justify-between h-full w-full p-6 md:p-8">
               <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
 
@@ -207,16 +220,16 @@ const LandingPage = () => {
                     <div key={link.id} className="relative group/social">
                       {isEditorMode ? (
                         <div className="flex items-center gap-1">
-                          <div className="glass-bubble-button bg-white/60 dark:bg-white/5 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-sm rounded-xl flex items-center gap-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 px-3 py-2">
+                          <button
+                            onClick={() => {
+                              setEditingSocialLink(link);
+                              setShowEditSocialModal(true);
+                            }}
+                            className="glass-bubble-button bg-white/60 dark:bg-white/5 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-sm rounded-xl flex items-center gap-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 px-3 py-2 hover:bg-white/80 dark:hover:bg-white/10 transition-colors"
+                          >
                             <Icon className="w-4 h-4 flex-shrink-0" />
-                            <InlineEdit
-                              value={link.label}
-                              onSave={(value) => handleUpdateSocialLink(link.id, { label: value })}
-                              className="text-xs font-medium text-gray-700 dark:text-gray-300"
-                            >
-                              {link.label}
-                            </InlineEdit>
-                          </div>
+                            <span>{link.label}</span>
+                          </button>
                           <button
                             onClick={() => handleDeleteSocialLink(link.id)}
                             className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-sm"
@@ -356,6 +369,42 @@ const LandingPage = () => {
             />
           </div>
         </div>
+      </EditModal>
+
+      {/* Edit Social Link Modal */}
+      <EditModal
+        isOpen={showEditSocialModal}
+        onClose={() => {
+          setShowEditSocialModal(false);
+          setEditingSocialLink(null);
+        }}
+        title="Edit Social Link"
+        onSave={handleEditSocialLink}
+      >
+        {editingSocialLink && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Label</label>
+              <input
+                type="text"
+                value={editingSocialLink.label}
+                onChange={(e) => setEditingSocialLink({ ...editingSocialLink, label: e.target.value })}
+                placeholder="e.g., My GitHub"
+                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL</label>
+              <input
+                type="url"
+                value={editingSocialLink.url}
+                onChange={(e) => setEditingSocialLink({ ...editingSocialLink, url: e.target.value })}
+                placeholder="https://..."
+                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white"
+              />
+            </div>
+          </div>
+        )}
       </EditModal>
     </motion.div>
   );

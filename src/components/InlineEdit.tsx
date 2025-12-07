@@ -115,11 +115,11 @@ const InlineEdit: React.FC<InlineEditProps> = ({
     >
       {children || value || <span className="text-gray-400/70 italic text-sm">{placeholder}</span>}
       {isHovered && (
-        <span className="absolute -top-1 -right-5 p-1 bg-blue-500/90 backdrop-blur-sm text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-50">
-          <Pencil className="w-2.5 h-2.5" />
+        <span className="absolute -top-1 -right-5 p-1.5 bg-blue-500 backdrop-blur-sm text-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-50">
+          <Pencil className="w-3 h-3" />
         </span>
       )}
-      <span className="absolute inset-0 border-2 border-transparent group-hover:border-blue-400/40 rounded-lg pointer-events-none transition-colors" />
+      <span className="absolute inset-0 border-2 border-transparent group-hover:border-blue-400/50 group-hover:bg-blue-50/10 dark:group-hover:bg-blue-500/5 rounded-lg pointer-events-none transition-all" />
     </span>
   );
 };

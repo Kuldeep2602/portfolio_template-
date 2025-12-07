@@ -94,16 +94,16 @@ const EditorToolbar: React.FC = () => {
             {isEditorMode ? 'Editing' : 'Preview'}
           </button>
 
-          <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
+          <div className="w-px h-5 bg-gray-200 dark:bg-gray-700" />
 
           {/* Color Preset Picker */}
           <div className="relative">
             <button
               onClick={() => setShowColorPicker(!showColorPicker)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <div
-                className="w-4 h-4 rounded-full"
+                className="w-3.5 h-3.5 rounded-full"
                 style={{ background: `linear-gradient(135deg, ${config.theme.primaryColor}, ${config.theme.secondaryColor})` }}
               />
               <Palette className="w-4 h-4" />
@@ -139,13 +139,13 @@ const EditorToolbar: React.FC = () => {
             )}
           </div>
 
-          <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
+          <div className="w-px h-5 bg-gray-200 dark:bg-gray-700" />
 
           {/* Undo Button */}
           <button
             onClick={undo}
             disabled={!canUndo}
-            className={`p-2.5 rounded-full transition-all ${canUndo
+            className={`p-2 rounded-full transition-all ${canUndo
               ? 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110'
               : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
               }`}
@@ -161,13 +161,13 @@ const EditorToolbar: React.FC = () => {
                 resetConfig();
               }
             }}
-            className="p-2.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110 transition-all"
+            className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-110 transition-all"
             title="Reset All"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
 
-          <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
+          <div className="w-px h-5 bg-gray-200 dark:bg-gray-700" />
 
           {/* Import Resume */}
           <input
@@ -180,7 +180,7 @@ const EditorToolbar: React.FC = () => {
           <button
             onClick={() => resumeInputRef.current?.click()}
             disabled={isParsingResume}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isParsingResume
+            className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-2 text-sm ${isParsingResume
                 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-wait'
                 : 'bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 hover:scale-105'
               }`}
@@ -189,12 +189,12 @@ const EditorToolbar: React.FC = () => {
             {isParsingResume ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Parsing...
+                <span>Parsing...</span>
               </>
             ) : (
               <>
-                <FileText className="w-4 h-4" />
-                Import Resume
+                <Upload className="w-4 h-4" />
+                <span>Resume</span>
               </>
             )}
           </button>
@@ -213,14 +213,14 @@ const EditorToolbar: React.FC = () => {
             href="https://github.com/Kuldeep2602/portfolio_template-"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-700 dark:to-gray-800 text-white hover:from-gray-700 hover:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 transition-all hover:scale-105 shadow-md"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-700 dark:to-gray-800 text-white hover:from-gray-700 hover:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 transition-all hover:scale-105 shadow-md"
             title="Star on GitHub"
           >
             <Github className="w-4 h-4" />
             <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
           </a>
 
-          <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
+          <div className="w-px h-5 bg-gray-200 dark:bg-gray-700" />
 
           {/* Export */}
           <button
