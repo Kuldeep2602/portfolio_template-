@@ -87,9 +87,9 @@ const saveToStorage = (config: PortfolioConfig) => {
 
 export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [config, setConfig] = useState<PortfolioConfig>(loadFromStorage);
-  // In production or viewer mode, default to false (view only)
-  const isViewerMode = import.meta.env.VITE_VIEWER_MODE === 'true' || import.meta.env.PROD;
-  const [isEditorMode, setIsEditorMode] = useState(!isViewerMode); // Default to edit mode only in dev
+  // Check viewer mode from environment variable
+  const isViewerMode = import.meta.env.VITE_VIEWER_MODE === 'true';
+  const [isEditorMode, setIsEditorMode] = useState(!isViewerMode);
   const [activeSection, setActiveSection] = useState('hero');
   const historyRef = useRef<PortfolioConfig[]>([]);
   const maxHistory = 20; // Keep last 20 states for undo

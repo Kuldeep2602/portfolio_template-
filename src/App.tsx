@@ -11,8 +11,8 @@
   import EditorToolbar from './components/EditorToolbar';
 
   // Check if we're in viewer mode (deployed portfolio without editor)
-  // Use VITE_VIEWER_MODE or fallback to production mode check
-  const isViewerMode = import.meta.env.VITE_VIEWER_MODE === 'true' || import.meta.env.PROD;
+  // Use VITE_VIEWER_MODE to determine if in viewer mode
+  const isViewerMode = import.meta.env.VITE_VIEWER_MODE === 'true';
 
   function App() {
     return (
