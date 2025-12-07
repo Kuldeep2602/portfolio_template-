@@ -174,10 +174,10 @@ const DeployModal: React.FC<DeployModalProps> = ({ isOpen, onClose }) => {
           <div className="text-center py-8">
             <Loader2 className="w-12 h-12 mx-auto mb-4 text-blue-500 animate-spin" />
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Preparing Your Files...
+              Connecting to GitHub...
             </h3>
             <p className="text-gray-500 dark:text-gray-400">
-              Generating deployment package
+              Creating your portfolio repository
             </p>
           </div>
         );
@@ -189,20 +189,20 @@ const DeployModal: React.FC<DeployModalProps> = ({ isOpen, onClose }) => {
               <Check className="w-8 h-8 text-green-500" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Config Downloaded! 🎉
+              Repository Created! 🎉
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
-              Your portfolio configuration has been downloaded
+              Your portfolio has been deployed to GitHub with viewer mode enabled
             </p>
 
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-6 text-left">
-              <p className="text-sm font-medium text-gray-900 dark:text-white mb-3">Next steps:</p>
-              <ol className="text-sm text-gray-600 dark:text-gray-400 space-y-2 list-decimal list-inside">
-                <li>Fork the portfolio template on GitHub</li>
-                <li>Import your config file into the app</li>
-                <li>Set VITE_VIEWER_MODE=true in deployment</li>
-                <li>Deploy to Vercel or Netlify</li>
-              </ol>
+              <p className="text-sm font-medium text-gray-900 dark:text-white mb-3">What happened:</p>
+              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+                <li>✅ Created your portfolio repository on GitHub</li>
+                <li>✅ Added your customized configuration</li>
+                <li>✅ Enabled viewer mode (no editing toolbar)</li>
+                <li>✅ Opened Vercel for deployment</li>
+              </ul>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
