@@ -41,7 +41,8 @@ const EditorToolbar: React.FC = () => {
       const formData = new FormData();
       formData.append('resume', file);
 
-      const response = await fetch('http://localhost:3001/api/parse-resume', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/parse-resume`, {
         method: 'POST',
         body: formData,
       });
