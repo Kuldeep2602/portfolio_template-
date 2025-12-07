@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Pencil, Check, X } from 'lucide-react';
 
 // Check if we're in viewer mode (deployed portfolio without editor)
-const isViewerMode = import.meta.env.VITE_VIEWER_MODE === 'true';
+// Use VITE_VIEWER_MODE or fallback to production mode check
+const isViewerMode = import.meta.env.VITE_VIEWER_MODE === 'true' || import.meta.env.PROD;
 
 interface InlineEditProps {
   value: string;
