@@ -50,11 +50,12 @@ const DeployModal: React.FC<DeployModalProps> = ({ isOpen, onClose }) => {
   };
 
   const handleGitHubDeploy = async () => {
-    setStep('generating');
-    
     try {
+      setStep('generating');
+      
       // Get config from context
-      const config = JSON.parse(exportConfig());
+      const configString = exportConfig();
+      const config = JSON.parse(configString);
       
       // Open GitHub OAuth in popup
       const width = 600;
@@ -63,44 +64,76 @@ const DeployModal: React.FC<DeployModalProps> = ({ isOpen, onClose }) => {
       const top = window.screen.height / 2 - height / 2;
       
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      console.log('Opening GitHub auth at:', `${apiUrl}/auth/github`);
+      
       const authWindow = window.open(
         `${apiUrl}/auth/github`,
         'GitHub Auth',
         `width=${width},height=${height},left=${left},top=${top}`
       );
       
-      // Listen for the OAuth callback
-      window.addEventListener('message', async (event) => {
+      if (!authWindow) {
+        alert('Popup was blocked! Please allow popups for this site and try again.');
+        setStep('intro');
+        return;
+      }
+      
+      // Set up message listener for OAuth callback
+      const messageHandler = async (event: MessageEvent) => {
+        console.log('Received message:', event.data);
+        
         if (event.data.type === 'GITHUB_AUTH_SUCCESS') {
           const { token } = event.data;
-          authWindow?.close();
+          console.log('GitHub auth successful, deploying...');
           
-          // Deploy to GitHub
-          const response = await fetch(`${apiUrl}/api/deploy`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              token,
-              config,
-              repoName: `portfolio-${Date.now()}`
-            })
-          });
+          // Remove listener
+          window.removeEventListener('message', messageHandler);
           
-          const result = await response.json();
-          
-          if (result.success) {
-            // Open Vercel with the new repo
-            window.open(`https://vercel.com/new/clone?repository-url=${result.repoUrl}`, '_blank');
-            setStep('ready');
-          } else {
-            alert('Deployment failed: ' + (result.error || 'Unknown error'));
+          try {
+            authWindow?.close();
+            
+            // Deploy to GitHub
+            console.log('Calling deploy API...');
+            const response = await fetch(`${apiUrl}/api/deploy`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                token,
+                config,
+                repoName: `portfolio-${Date.now()}`
+              })
+            });
+            
+            const result = await response.json();
+            console.log('Deploy result:', result);
+            
+            if (result.success) {
+              // Open Vercel with the new repo
+              console.log('Opening Vercel with repo:', result.repoUrl);
+              window.open(`https://vercel.com/new/clone?repository-url=${result.repoUrl}`, '_blank');
+              setStep('ready');
+            } else {
+              alert('Deployment failed: ' + (result.error || 'Unknown error'));
+              setStep('intro');
+            }
+          } catch (deployError) {
+            console.error('Deploy error:', deployError);
+            alert('Deployment failed: ' + (deployError instanceof Error ? deployError.message : 'Unknown error'));
             setStep('intro');
           }
         }
-      });
+      };
+      
+      window.addEventListener('message', messageHandler);
+      
+      // Clean up listener after 5 minutes
+      setTimeout(() => {
+        window.removeEventListener('message', messageHandler);
+      }, 5 * 60 * 1000);
+      
     } catch (error) {
-      console.error('Deploy error:', error);
-      alert('Deployment failed. Please try again.');
+      console.error('Deploy initialization error:', error);
+      alert('Failed to start deployment: ' + (error instanceof Error ? error.message : 'Unknown error'));
       setStep('intro');
     }
   };
